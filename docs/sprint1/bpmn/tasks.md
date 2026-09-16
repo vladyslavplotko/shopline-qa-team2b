@@ -1,0 +1,4 @@
+# Таблиця розподілу задач — Спринт 1
+
+Таблиця розподілу задач (виконавці, оцінка/факт годин, статуси) — у Google Sheets:
+https://docs.google.com/document/d/1HrX2CWegt98wsd-eNjvynpDjllzcLbkQOUfQkHEiA0g/edit?tab=t.0
