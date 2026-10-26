@@ -33,6 +33,3 @@ labels: ["status:new", "sprint:3"]
 
 ### Environment
 demo: https://practicesoftwaretesting.com (стан на 2026-10-14); браузер: Google Chrome 140.0 (64-bit), вікно 1920×1080; ОС: Windows 11; обліковий запис: без входу (Гість) / customer@practicesoftwaretesting.com
-
-### Attachments
-* `BUG-00X-1.png` — опис того, що зафіксовано на знімку екрана.
