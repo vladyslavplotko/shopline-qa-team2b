@@ -1,0 +1,134 @@
+{
+  "id": "shopline",
+  "version": "2.0",
+  "name": "ShopLine UI Tests",
+  "url": "https://practicesoftwaretesting.com",
+  "tests": [
+    {
+      "id": "tc20-search-hammer",
+      "name": "TC-20 Search for Hammer",
+      "commands": [
+        {
+          "id": "1",
+          "comment": "Open the Toolshop website",
+          "command": "open",
+          "target": "/",
+          "value": ""
+        },
+        {
+          "id": "2",
+          "comment": "Wait for the search field",
+          "command": "waitForElementVisible",
+          "target": "css=[data-test='search-query']",
+          "value": "15000"
+        },
+        {
+          "id": "3",
+          "comment": "Enter Hammer",
+          "command": "type",
+          "target": "css=[data-test='search-query']",
+          "value": "Hammer"
+        },
+        {
+          "id": "4",
+          "comment": "Submit search",
+          "command": "click",
+          "target": "css=[data-test='search-submit']",
+          "value": ""
+        },
+        {
+          "id": "5",
+          "comment": "Wait for products",
+          "command": "waitForElementVisible",
+          "target": "css=a[data-test^='product-']",
+          "value": "15000"
+        },
+        {
+          "id": "6",
+          "comment": "Verify products are displayed",
+          "command": "verifyElementPresent",
+          "target": "css=a[data-test^='product-']",
+          "value": ""
+        },
+        {
+          "id": "7",
+          "comment": "Assert search value",
+          "command": "assertValue",
+          "target": "css=[data-test='search-query']",
+          "value": "Hammer"
+        }
+      ]
+    },
+    {
+      "id": "tc15-add-to-cart",
+      "name": "TC-15 Add Product to Cart",
+      "commands": [
+        {
+          "id": "1",
+          "comment": "Open the Toolshop website",
+          "command": "open",
+          "target": "/",
+          "value": ""
+        },
+        {
+          "id": "2",
+          "comment": "Wait for the first product",
+          "command": "waitForElementVisible",
+          "target": "css=a[data-test^='product-']",
+          "value": "15000"
+        },
+        {
+          "id": "3",
+          "comment": "Open the first product",
+          "command": "click",
+          "target": "css=a[data-test^='product-']",
+          "value": ""
+        },
+        {
+          "id": "4",
+          "comment": "Wait for product details",
+          "command": "waitForElementVisible",
+          "target": "css=[data-test='product-name']",
+          "value": "15000"
+        },
+        {
+          "id": "5",
+          "comment": "Add product to cart",
+          "command": "click",
+          "target": "css=[data-test='add-to-cart']",
+          "value": ""
+        },
+        {
+          "id": "6",
+          "comment": "Wait for cart quantity",
+          "command": "waitForElementVisible",
+          "target": "css=[data-test='cart-quantity']",
+          "value": "15000"
+        },
+        {
+          "id": "7",
+          "comment": "Assert cart quantity is one",
+          "command": "assertText",
+          "target": "css=[data-test='cart-quantity']",
+          "value": "1"
+        }
+      ]
+    }
+  ],
+  "suites": [
+    {
+      "id": "shopline-suite",
+      "name": "ShopLine Test Suite",
+      "persistSession": false,
+      "parallel": false,
+      "timeout": 300,
+      "tests": [
+        "tc20-search-hammer",
+        "tc15-add-to-cart"
+      ]
+    }
+  ],
+  "urls": [
+    "https://practicesoftwaretesting.com"
+  ]
+}
