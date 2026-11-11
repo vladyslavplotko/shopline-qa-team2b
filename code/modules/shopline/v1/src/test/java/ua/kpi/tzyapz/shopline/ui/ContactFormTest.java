@@ -3,6 +3,7 @@ package ua.kpi.tzyapz.shopline.ui;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
@@ -14,7 +15,6 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -35,29 +35,13 @@ public class ContactFormTest {
     }
 
     @Test
+    @DisplayName("Перевірка валідації порожньої контактної форми")
     void emptyContactFormValidation() {
         driver.get("https://practicesoftwaretesting.com/contact");
 
         wait.until(ExpectedConditions.presenceOfElementLocated(
                 By.cssSelector("form")
         ));
-
-        List<WebElement> fields = driver.findElements(
-                By.cssSelector("form input, form textarea, form select, form button")
-        );
-
-        System.out.println("CONTACT FORM ELEMENTS:");
-
-        for (WebElement element : fields) {
-            System.out.println(
-                    "tag=" + element.getTagName()
-                    + ", type=" + element.getAttribute("type")
-                    + ", id=" + element.getAttribute("id")
-                    + ", name=" + element.getAttribute("name")
-                    + ", data-test=" + element.getAttribute("data-test")
-                    + ", text=" + element.getText()
-            );
-        }
 
         WebElement form = driver.findElement(By.cssSelector("form"));
 

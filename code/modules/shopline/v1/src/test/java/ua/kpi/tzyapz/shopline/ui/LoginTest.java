@@ -3,6 +3,7 @@ package ua.kpi.tzyapz.shopline.ui;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
@@ -33,6 +34,7 @@ public class LoginTest {
     }
 
     @Test
+    @DisplayName("Успішний вхід покупця в обліковий запис")
     void successfulCustomerLogin() {
         driver.get("https://practicesoftwaretesting.com/auth/login");
 
@@ -51,6 +53,7 @@ public class LoginTest {
     }
 
     @Test
+    @DisplayName("Відображення помилки при вході з неправильним паролем")
     void loginWithWrongPasswordShowsError() {
         driver.get("https://practicesoftwaretesting.com/auth/login");
 

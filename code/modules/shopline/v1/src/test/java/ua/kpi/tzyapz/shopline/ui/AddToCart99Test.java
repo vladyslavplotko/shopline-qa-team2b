@@ -3,6 +3,7 @@ package ua.kpi.tzyapz.shopline.ui;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
@@ -34,6 +35,7 @@ public class AddToCart99Test {
     }
 
     @Test
+    @DisplayName("Додавання 99 одиниць товару до кошика")
     void add99ProductsToCart() {
         driver.get("https://practicesoftwaretesting.com");
 
