@@ -45,7 +45,7 @@ public class SearchHammerTest {
     }
 
     @Test
-    @DisplayName("Пошук товарів Hammer та очищення пошукового поля")
+    @DisplayName("TC-010 / F-60: Пошук товарів Hammer та очищення пошукового поля")
     void searchHammerAndClearSearch() {
         driver.get("https://practicesoftwaretesting.com");
 
