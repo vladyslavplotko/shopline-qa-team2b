@@ -35,7 +35,7 @@ public class ContactFormTest {
     }
 
     @Test
-    @DisplayName("Перевірка валідації порожньої контактної форми")
+    @DisplayName("TC-018 / F-140: Перевірка валідації порожньої контактної форми")
     void emptyContactFormValidation() {
         driver.get("https://practicesoftwaretesting.com/contact");
 
