@@ -1,7 +1,7 @@
 package ua.kpi.tzyapz.shopline;
 
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.DisplayName;
 import java.math.BigDecimal;
 import java.util.NoSuchElementException;
 
@@ -142,5 +142,111 @@ class CartTest {
                 () -> assertEquals(new BigDecimal("0.00"), cart.subtotal()),
                 () -> assertEquals(0, cart.itemCount())
         );
+    }
+    // ==========================================
+    // ВЛАДИСЛАВ ПЛОТКО — BL-10
+    // ==========================================
+    @Test
+    @DisplayName("BL-10: Accepts boundary quantities 1 and 99")
+    void addItem_acceptsBoundaryQuantities1And99() {
+        Cart cart = new Cart();
+
+        cart.addItem("SKU-1", "Hammer", new BigDecimal("10.00"), 1);
+        cart.addItem("SKU-2", "Drill", new BigDecimal("10.00"), 99);
+
+        assertAll(
+                () -> assertEquals(1, cart.qtyOf("SKU-1")),
+                () -> assertEquals(99, cart.qtyOf("SKU-2")),
+                () -> assertEquals(100, cart.itemCount())
+        );
+    }
+
+    @Test
+    @DisplayName("BL-10: Rejects quantities 0 and 100")
+    void addItem_rejectsQuantity0And100() {
+        Cart cart = new Cart();
+
+        assertAll(
+                () -> assertThrows(
+                        IllegalArgumentException.class,
+                        () -> cart.addItem("SKU-1", "Hammer", new BigDecimal("10.00"), 0)
+                ),
+                () -> assertThrows(
+                        IllegalArgumentException.class,
+                        () -> cart.addItem("SKU-2", "Drill", new BigDecimal("10.00"), 100)
+                ),
+                () -> assertEquals(0, cart.items().size())
+        );
+    }
+
+    @Test
+    @DisplayName("BL-10: Rejects zero and negative prices")
+    void addItem_rejectsInvalidPrices() {
+        Cart cart = new Cart();
+
+        assertAll(
+                () -> assertThrows(
+                        IllegalArgumentException.class,
+                        () -> cart.addItem("SKU-1", "Hammer", BigDecimal.ZERO, 1)
+                ),
+                () -> assertThrows(
+                        IllegalArgumentException.class,
+                        () -> cart.addItem("SKU-2", "Drill", new BigDecimal("-10.00"), 1)
+                ),
+                () -> assertEquals(0, cart.items().size())
+        );
+    }
+
+    @Test
+    @DisplayName("BL-10: Rejects empty SKU")
+    void addItem_rejectsBlankSku() {
+        Cart cart = new Cart();
+
+        assertAll(
+                () -> assertThrows(
+                        IllegalArgumentException.class,
+                        () -> cart.addItem("", "Hammer", new BigDecimal("10.00"), 1)
+                ),
+                () -> assertThrows(
+                        IllegalArgumentException.class,
+                        () -> cart.addItem(null, "Hammer", new BigDecimal("10.00"), 1)
+                ),
+                () -> assertEquals(0, cart.items().size())
+        );
+    }
+
+    @Test
+    @DisplayName("BL-10: Rejects empty product name")
+    void addItem_rejectsBlankName() {
+        Cart cart = new Cart();
+
+        assertAll(
+                () -> assertThrows(
+                        IllegalArgumentException.class,
+                        () -> cart.addItem("SKU-1", "", new BigDecimal("10.00"), 1)
+                ),
+                () -> assertThrows(
+                        IllegalArgumentException.class,
+                        () -> cart.addItem("SKU-2", null, new BigDecimal("10.00"), 1)
+                ),
+                () -> assertEquals(0, cart.items().size())
+        );
+    }
+
+    @Test
+    @DisplayName("BL-20: Rejects repeated SKU quantity above 99")
+    void addItem_rejectsSameSkuQuantityAbove99() {
+        Cart cart = new Cart();
+
+        cart.addItem("SKU-1", "Hammer", new BigDecimal("10.00"), 99);
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> cart.addItem("SKU-1", "Hammer", new BigDecimal("10.00"), 1)
+        );
+
+        assertEquals(1, cart.items().size());
+        assertEquals(99, cart.qtyOf("SKU-1"));
+        assertEquals(99, cart.itemCount());
     }
 }
