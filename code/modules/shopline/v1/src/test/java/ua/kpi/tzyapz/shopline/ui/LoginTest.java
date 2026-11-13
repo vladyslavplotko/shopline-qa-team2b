@@ -34,7 +34,7 @@ public class LoginTest {
     }
 
     @Test
-    @DisplayName("Успішний вхід покупця в обліковий запис")
+    @DisplayName("TC-004 / F-20: Успішний вхід зареєстрованого покупця")
     void successfulCustomerLogin() {
         driver.get("https://practicesoftwaretesting.com/auth/login");
 
