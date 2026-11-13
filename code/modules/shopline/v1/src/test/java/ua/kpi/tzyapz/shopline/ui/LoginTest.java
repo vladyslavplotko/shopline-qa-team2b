@@ -53,7 +53,7 @@ public class LoginTest {
     }
 
     @Test
-    @DisplayName("Відображення помилки при вході з неправильним паролем")
+    @DisplayName("TC-005 / F-20: Відображення помилки при вході з неправильним паролем")
     void loginWithWrongPasswordShowsError() {
         driver.get("https://practicesoftwaretesting.com/auth/login");
 
