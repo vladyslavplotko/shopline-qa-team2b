@@ -35,7 +35,7 @@ public class AddToCart99Test {
     }
 
     @Test
-    @DisplayName("TC-018 / F-140: Перевірка валідації порожньої контактної форми")
+    @DisplayName("TC-012 / F-90: quantity 99 is accepted at the upper boundary")
     void add99ProductsToCart() {
         driver.get("https://practicesoftwaretesting.com");
 
