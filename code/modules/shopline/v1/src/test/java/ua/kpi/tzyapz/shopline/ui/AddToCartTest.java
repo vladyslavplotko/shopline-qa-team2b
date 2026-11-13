@@ -35,7 +35,7 @@ public class AddToCartTest {
     }
 
     @Test
-    @DisplayName("Додавання одного товару до кошика")
+    @DisplayName("TC-012 (qty=1) / F-90: Додавання одного товару до кошика")
     void addProductToCart() {
         driver.get("https://practicesoftwaretesting.com");
 
