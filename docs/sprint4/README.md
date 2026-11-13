@@ -12,8 +12,8 @@
 | Учасник | Роль у Спринті 4 | Написані тест-класи та артефакти | К-сть тест-методів |
 | :--- | :--- | :--- | :---: |
 | **Прохоренко М.П.** | Керівник тестування (КТ) | `DiscountCalculatorTest.java` (`BL-50`, `BL-60`), `BUG-014`, `BUG-015`, `surefire-summary.md`, `README.md`, перехресне рев'ю `PromoCodeValidatorTest` | 8 unit-методів |
-| **Плотко В.** | Тест-аналітик (ТА) | `CartTest.java` (част. 1: `BL-10`, `BL-20`), `BUG-010`, `BUG-011`, `coverage-matrix.md`, `ui-scenarios.md` | 6 unit-методів |
-| **Касян С.** | Інженер з тестування (ІТ / SDET) | `CartTest.java` (част. 2: `BL-30`, `BL-40`), 5 класів WebDriver у пакеті `ui/` (6 сценаріїв), `selenium-ide/shopline.side` + експорт у Java | 9 unit-методів + 6 UI-методів |
+| **Плотко В.** | Тест-аналітик (ТА) | `CartTest.java` (част. 1: `BL-10`, `BL-20`), `BUG-010`, `BUG-011`, `coverage-matrix.md`, `ui-scenarios.md` | 6 unit-методів (CartTest.java, част. 1: BL-10, BL-20) |
+| **Касян С.** | Інженер з тестування (ІТ / SDET) | `CartTest.java` (част. 2: `BL-30`, `BL-40`), 5 класів WebDriver у пакеті `ui/` (6 сценаріїв), `selenium-ide/shopline.side` + експорт у Java | 11 unit-методів + 6 UI-методів (CartTest.java, част. 2: BL-30, BL-40) |
 | **Пінчук А.П.** | Скрам-майстер / Рецензент (СМ) | `PromoCodeValidatorTest.java` (`BL-70`, `BL-80`), `BUG-012`, `BUG-013`, Code Review тест-класів за чек-листом 5.3, `task-board.md`, `retro.md` | 9 unit-методів |
 
 ---
