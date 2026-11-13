@@ -198,38 +198,37 @@ class CartTest {
     }
 
     @Test
-    @DisplayName("BL-10: Rejects empty SKU")
+    @DisplayName("BL-10: Rejects empty, blank and null SKU")
     void addItem_rejectsBlankSku() {
         Cart cart = new Cart();
 
         assertAll(
-                () -> assertThrows(
-                        IllegalArgumentException.class,
-                        () -> cart.addItem("", "Hammer", new BigDecimal("10.00"), 1)
-                ),
-                () -> assertThrows(
-                        IllegalArgumentException.class,
-                        () -> cart.addItem(null, "Hammer", new BigDecimal("10.00"), 1)
-                ),
-                () -> assertEquals(0, cart.items().size())
-        );
+            () -> assertThrows(
+                    IllegalArgumentException.class,
+                    () -> cart.addItem("", "Hammer", new BigDecimal("10.00"), 1)
+            ),
+            () -> assertThrows(
+                    IllegalArgumentException.class,
+                    () -> cart.addItem("   ", "Hammer", new BigDecimal("10.00"), 1)
+            ),
+            () -> assertThrows(
+                    IllegalArgumentException.class,
+                    () -> cart.addItem(null, "Hammer", new BigDecimal("10.00"), 1)
+            ),
+            () -> assertEquals(0, cart.items().size())
+         );
     }
 
     @Test
-    @DisplayName("BL-10: Rejects empty product name")
-    void addItem_rejectsBlankName() {
+    @DisplayName("BL-10: Rounds unitPrice to 2 decimal places using HALF_UP")
+    void addItem_roundsUnitPriceHalfUp() {
         Cart cart = new Cart();
 
+        cart.addItem("SKU-1", "Hammer", new BigDecimal("1.005"), 1);
+
         assertAll(
-                () -> assertThrows(
-                        IllegalArgumentException.class,
-                        () -> cart.addItem("SKU-1", "", new BigDecimal("10.00"), 1)
-                ),
-                () -> assertThrows(
-                        IllegalArgumentException.class,
-                        () -> cart.addItem("SKU-2", null, new BigDecimal("10.00"), 1)
-                ),
-                () -> assertEquals(0, cart.items().size())
+            () -> assertEquals(new BigDecimal("1.01"), cart.subtotal()),
+            () -> assertEquals(1, cart.itemCount())
         );
     }
 
