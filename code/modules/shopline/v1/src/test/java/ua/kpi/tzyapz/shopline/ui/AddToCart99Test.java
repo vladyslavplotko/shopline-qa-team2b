@@ -1,4 +1,3 @@
-
 package ua.kpi.tzyapz.shopline.ui;
 
 import org.junit.jupiter.api.AfterEach;
@@ -19,6 +18,7 @@ import java.time.Duration;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Tag("ui")
+@DisplayName("TC-012 (qty=99) / F-90: Додавання максимальної допустимої кількості товару (99)")
 public class AddToCart99Test {
 
     private WebDriver driver;
