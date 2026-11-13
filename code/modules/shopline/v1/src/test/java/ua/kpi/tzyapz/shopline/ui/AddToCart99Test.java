@@ -35,7 +35,7 @@ public class AddToCart99Test {
     }
 
     @Test
-    @DisplayName("Додавання 99 одиниць товару до кошика")
+    @DisplayName("TC-018 / F-140: Перевірка валідації порожньої контактної форми")
     void add99ProductsToCart() {
         driver.get("https://practicesoftwaretesting.com");
 
