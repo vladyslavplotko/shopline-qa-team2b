@@ -15,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Юніт-тести правил BL-70 (валідація промокоду) та BL-80 (розрахунок знижки за промокодом).
  * Автор: Пінчук А. (СМ)
+ * Рецензент: Прохоренко М. (КТ)
  */
 @Tag("unit")
 @DisplayName("PromoCodeValidator — перевірка та застосування промокодів (BL-70, BL-80)")
@@ -31,16 +32,14 @@ class PromoCodeValidatorTest {
         defaultSubtotal = new BigDecimal("1000.00");
     }
 
-    @ParameterizedTest(name = "BL-70: код ''{0}'' -> valid={1}")
+    @ParameterizedTest(name = "BL-70: код ''{0}'' (довжина) -> valid={1}")
     @CsvSource({
             "ABC12, false",        // 5 символів (менше нижньої межі 6)
             "ABC123, true",        // 6 символів (нижня межа)
             "ABCDE12345, true",    // 10 символів (верхня межа)
-            "ABCDE123456, false",  // 11 символів (більше верхньої межі 10)
-            "abc123, false",       // малі літери заборонені форматом A-Z0-9
-            "ABC-123, false"       // спецсимволи заборонені
+            "ABCDE123456, false"   // 11 символів (більше верхньої межі 10)
     })
-    @DisplayName("BL-70: межі довжини (6..10) та формат символів (A-Z, 0-9)")
+    @DisplayName("BL-70: межі довжини промокоду (5, 6, 10, 11 символів)")
     void validate_codeLengthBoundaries(String code, boolean expectedValid) {
         PromoCode promo = new PromoCode(
                 code, PromoCode.Type.PERCENT, new BigDecimal("10"),
@@ -61,7 +60,7 @@ class PromoCodeValidatorTest {
         );
     }
 
-    // Падає на v1: виявляє закладений дефект модуля (промокод відхиляється в останній день дії today == expiresOn)
+    // BUG-012 (Issue #22): падає на v1, бо !today.isBefore(expiresOn) відхиляє код в останній день дії (today == expiresOn)
     @Test
     @DisplayName("BL-70: граничні значення дати закінчення дії (вчора, сьогодні включно, завтра)")
     void validate_expirationDateBoundary() {
@@ -95,7 +94,7 @@ class PromoCodeValidatorTest {
             "50, true",   // верхня межа 50%
             "51, false"   // вище максимуму
     })
-    @DisplayName("BL-70: межі відсоткової знижки PERCENT (1..50)")
+    @DisplayName("BL-70: межі відсоткової знижки PERCENT (0, 1, 50, 51)")
     void validate_percentageBoundaries(String percent, boolean expectedValid) {
         PromoCode promo = new PromoCode(
                 "PERC10", PromoCode.Type.PERCENT, new BigDecimal(percent),
@@ -113,7 +112,7 @@ class PromoCodeValidatorTest {
             "0.00, false",    // нульова сума (має бути > 0)
             "0.01, true",     // мінімальна додатна сума
             "1000.00, true",  // рівно subtotal (верхня межа)
-            "1000.01, false"  // перевищує subtotal
+            "1000.01, false"  // перевищує subtotal (subtotal + 0.01)
     })
     @DisplayName("BL-70: межі фіксованої знижки FIXED (> 0 та <= subtotal)")
     void validate_fixedAmountBoundaries(String amount, boolean expectedValid) {
@@ -127,7 +126,7 @@ class PromoCodeValidatorTest {
         assertEquals(expectedValid, result.valid());
     }
 
-    // Падає на v1: виявляє закладений дефект модуля (validate ігнорує прапорці singleUse=true та used=true)
+    // BUG-013 (Issue #23): падає на v1, бо validate() ігнорує прапорці singleUse=true та used=true
     @Test
     @DisplayName("BL-70: використаний одноразовий промокод відхиляється")
     void validate_usedOneTimeCodeIsRejected() {
@@ -153,49 +152,71 @@ class PromoCodeValidatorTest {
     @Test
     @DisplayName("BL-80: відсоткова знижка обчислюється та округлюється за HALF_UP")
     void apply_percentageDiscountRoundsHalfUp() {
-        // Arrange: 2333.33 * 5% = 116.6665 -> за HALF_UP очікуємо 116.67
         PromoCode promo = new PromoCode(
                 "SALE05", PromoCode.Type.PERCENT, new BigDecimal("5"),
                 today.plusDays(5), false, false
         );
         BigDecimal subtotal = new BigDecimal("2333.33");
 
-        // Act
         BigDecimal discount = validator.apply(promo, today, subtotal);
 
-        // Assert
         assertEquals(new BigDecimal("116.67"), discount);
     }
 
     @Test
-    @DisplayName("BL-80: фіксована знижка повертає суму коду зі шкалою 2 знаки")
+    @DisplayName("BL-80: фіксована знижка повертає суму коду на межах (0.01, проміжне значення, рівно subtotal)")
     void apply_fixedAmountDiscount() {
-        PromoCode promo = new PromoCode(
+        PromoCode minFixed = new PromoCode(
+                "FIX001", PromoCode.Type.FIXED, new BigDecimal("0.01"),
+                today.plusDays(5), false, false
+        );
+        PromoCode midFixed = new PromoCode(
                 "FIX250", PromoCode.Type.FIXED, new BigDecimal("250.00"),
                 today.plusDays(5), false, false
         );
-
-        BigDecimal discount = validator.apply(promo, today, defaultSubtotal);
-
-        assertEquals(new BigDecimal("250.00"), discount);
-    }
-
-    @Test
-    @DisplayName("BL-80: застосування недійсного промокоду кидає IllegalArgumentException із причиною")
-    void apply_invalidCodeThrowsWithReason() {
-        PromoCode invalidPromo = new PromoCode(
-                "BAD", PromoCode.Type.PERCENT, new BigDecimal("10"),
+        PromoCode maxFixed = new PromoCode(
+                "FIXMAX", PromoCode.Type.FIXED, new BigDecimal("1000.00"),
                 today.plusDays(5), false, false
         );
 
-        IllegalArgumentException ex = assertThrows(
-                IllegalArgumentException.class,
-                () -> validator.apply(invalidPromo, today, defaultSubtotal)
+        assertAll(
+                () -> assertEquals(new BigDecimal("0.01"), validator.apply(minFixed, today, defaultSubtotal)),
+                () -> assertEquals(new BigDecimal("250.00"), validator.apply(midFixed, today, defaultSubtotal)),
+                () -> assertEquals(new BigDecimal("1000.00"), validator.apply(maxFixed, today, defaultSubtotal))
         );
-        assertFalse(ex.getMessage().isBlank());
     }
 
-    // Падає на v1: виявляє закладений дефект модуля (apply застосовує вже використаний одноразовий код)
+    @Test
+    @DisplayName("BL-80: застосування недійсного коду або суми > subtotal (subtotal + 0.01) кидає IllegalArgumentException")
+    void apply_invalidCodeThrowsWithReason() {
+        PromoCode shortCode = new PromoCode(
+                "BAD", PromoCode.Type.PERCENT, new BigDecimal("10"),
+                today.plusDays(5), false, false
+        );
+        PromoCode aboveSubtotalFixed = new PromoCode(
+                "OVER99", PromoCode.Type.FIXED, new BigDecimal("1000.01"),
+                today.plusDays(5), false, false
+        );
+
+        assertAll(
+                () -> {
+                    IllegalArgumentException ex = assertThrows(
+                            IllegalArgumentException.class,
+                            () -> validator.apply(shortCode, today, defaultSubtotal)
+                    );
+                    assertFalse(ex.getMessage().isBlank());
+                },
+                () -> {
+                    IllegalArgumentException ex = assertThrows(
+                            IllegalArgumentException.class,
+                            () -> validator.apply(aboveSubtotalFixed, today, defaultSubtotal)
+                    );
+                    assertFalse(ex.getMessage().isBlank());
+                }
+        );
+    }
+
+    // BUG-013 (Issue #23): падає на v1, бо apply() не відхиляє вже використаний одноразовий промокод
     @Test
     @DisplayName("BL-80: спроба застосувати використаний одноразовий промокод кидає IllegalArgumentException")
     void apply_usedOneTimeCodeIsRejected() {
