@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Юніт-тести для класу DiscountCalculator за вимогами BL-50 (обсягова знижка)
- * та BL-60 (вартість доставки).
+ * та BL-60 (вартість доставки) згідно зі специфікацією SRS-1.1.
  * Автор: Прохоренко М.П. (КТ)
  */
 @Tag("unit")
@@ -97,15 +97,16 @@ class DiscountCalculatorTest {
         );
     }
 
-    // ==================== BL-60: Вартість доставки ====================
+    // ==================== BL-60: Вартість доставки (за SRS-1.1 поріг 2000.00 грн) ====================
 
+    // Дефект модуля v1: BUG-017 (FREE_SHIPPING_FROM = 1500 замість 2000 за BL-60 SRS-1.1; на 1999.99 повертає 0.00 замість 120.00)
     @ParameterizedTest(name = "BL-60: сума після знижки={0} грн -> доставка {1} грн")
     @CsvSource({
-            "1499.99, 120.00",
-            "1500.00, 0.00",
-            "1500.01, 0.00"
+            "1999.99, 120.00",
+            "2000.00, 0.00",
+            "2000.01, 0.00"
     })
-    @DisplayName("BL-60: граничні значення порогу безкоштовної доставки (1499.99, 1500.00, 1500.01)")
+    @DisplayName("BL-60: граничні значення порогу безкоштовної доставки 2000.00 грн за SRS-1.1 (1999.99, 2000.00, 2000.01)")
     void shippingFee_respects2000Threshold(String subtotalAfterDiscountStr, String expectedFeeStr) {
         BigDecimal subtotalAfterDiscount = new BigDecimal(subtotalAfterDiscountStr);
         BigDecimal expectedFee = new BigDecimal(expectedFeeStr);
@@ -113,14 +114,16 @@ class DiscountCalculatorTest {
         assertEquals(expectedFee, actualFee);
     }
 
+    // Дефект модуля v1: BUG-017 (для сум 1500.00..1999.99 грн повертає 0.00 грн замість 120.00 грн за BL-60 SRS-1.1)
     @Test
-    @DisplayName("BL-60: для сум нижче порогу безкоштовної доставки нараховується 120.00 грн")
+    @DisplayName("BL-60: для сум нижче порогу 2000.00 грн нараховується доставка 120.00 грн")
     void shippingFee_returns120BelowThreshold() {
         BigDecimal expectedFee = new BigDecimal("120.00");
-        assertAll("Вартість доставки нижче порогу",
+        assertAll("Вартість доставки нижче порогу 2000.00 грн за SRS-1.1",
                 () -> assertEquals(expectedFee, calc.shippingFee(new BigDecimal("0.00"))),
                 () -> assertEquals(expectedFee, calc.shippingFee(new BigDecimal("500.00"))),
-                () -> assertEquals(expectedFee, calc.shippingFee(new BigDecimal("1499.99")))
+                () -> assertEquals(expectedFee, calc.shippingFee(new BigDecimal("1500.00"))),
+                () -> assertEquals(expectedFee, calc.shippingFee(new BigDecimal("1999.99")))
         );
     }
 
